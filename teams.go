@@ -19,6 +19,8 @@
 package gonotify
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"sync"
@@ -26,12 +28,7 @@ import (
 	"github.com/fire833/go-notify/pkg/common"
 )
 
-var (
-	localTransport http.RoundTripper = common.NotifyHTTPTransporter
-)
-
-type teamsNotificationReq struct {
-}
+var ()
 
 type TeamsNotifier struct {
 	sync.RWMutex
@@ -42,6 +39,8 @@ type TeamsNotifier struct {
 
 type TeamsConfig struct {
 	WebhookURL *url.URL
+
+	Color string
 }
 
 func NewTeamsNotifier() *TeamsNotifier {
@@ -74,10 +73,15 @@ func (t *TeamsNotifier) SendMessage(msg *Message) error {
 	}
 
 	if t.isReady() {
-		r, e := localTransport.RoundTrip(t.generateRequest(msg))
-		e1 := t.parseResponse(r)
+		req, e := t.generateRequest(msg)
+		if e != nil {
+			return common.ErrorNotifierSerializationError
+		}
 
-		if e != nil || e1 != nil {
+		resp, e1 := common.NotifyHTTPTransporter.RoundTrip(req)
+		e2 := t.parseResponse(resp)
+
+		if e1 != nil || e2 != nil {
 			return common.ErrorNotificationSendError
 		}
 
@@ -90,7 +94,6 @@ func (t *TeamsNotifier) SendMessage(msg *Message) error {
 
 // Configure configures the notifier with proper configuration for its operation.
 func (t *TeamsNotifier) Configure(config *TeamsConfig) error {
-
 	if e := config.Validate(); e != nil {
 		return common.ErrorInvalidConfiguration
 	}
@@ -98,7 +101,6 @@ func (t *TeamsNotifier) Configure(config *TeamsConfig) error {
 	t.Lock()
 	t.config = config
 	t.Unlock()
-
 	return nil
 }
 
@@ -113,26 +115,52 @@ func (t *TeamsNotifier) Close() error {
 	t.Lock()
 	t.closed = true
 	t.Unlock()
-
 	return nil
 }
 
 func (t *TeamsNotifier) isReady() bool {
 	t.RLock()
 	defer t.RUnlock()
-
 	return t.config != nil
 }
 
 func (t *TeamsNotifier) isClosed() bool {
 	t.RLock()
 	defer t.RUnlock()
-
 	return t.closed
 }
 
-func (t *TeamsNotifier) generateRequest(msg *Message) *http.Request {
-	return nil
+// Internal method to generate the request for Teams incoming webhook from
+// a message. Callers should have a read lock already on the TeamsNotifier struct.
+func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
+
+	// generate the kv object.
+	fields := map[string]interface{}{}
+	for key, value := range msg.metadata {
+		fields[key] = value
+	}
+
+	body := &map[string]interface{}{
+		"@type":      "MessageCard",
+		"@context":   "http://schema.org/extensions",
+		"summary":    msg.subtitle,
+		"title":      msg.title,
+		"themeColor": t.config.Color,
+
+		"sections": []map[string]interface{}{
+			{
+				"text": msg.msg,
+			},
+		},
+	}
+
+	bdata, e := json.Marshal(body)
+	if e != nil {
+		return nil, e
+	}
+
+	return http.NewRequest("POST", t.config.WebhookURL.String(), bytes.NewReader(bdata))
+
 }
 
 func (t *TeamsNotifier) parseResponse(*http.Response) error {

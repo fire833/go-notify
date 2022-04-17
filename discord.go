@@ -16,19 +16,20 @@
 *	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package common
+package gonotify
 
-import "errors"
-
-var (
-	ErrorNoBackend         error = errors.New("backend not found")
-	ErrorNoBackendInstance error = errors.New("backend instance not found")
-
-	ErrorNotifierClosed             error = errors.New("the desired notifier has been closed and decomissioned")
-	ErrorNotifierNotReady           error = errors.New("the desired notifier is not ready yet")
-	ErrorNotifierSerializationError error = errors.New("unable to parse message to request for backend to process")
-
-	ErrorInvalidConfiguration error = errors.New("the configuration provided is invalid")
-
-	ErrorNotificationSendError error = errors.New("unable to send notification via the desired backend")
+import (
+	"net/url"
+	"sync"
 )
+
+type DiscordNotifier struct {
+	sync.RWMutex
+	config *TeamsConfig
+
+	closed bool
+}
+
+type DiscordConfig struct {
+	WebhookURL *url.URL
+}

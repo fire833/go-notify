@@ -19,16 +19,27 @@
 package gonotify
 
 import (
+	"errors"
 	"net/url"
+	"sync"
 	"time"
 )
 
+var (
+	errorNoURL error = errors.New("url object is not loaded within message")
+)
+
 type Message struct {
+	m sync.RWMutex
+
 	msg string
 
 	title    string
+	subtitle string
 	priority int
 	url      *url.URL
+
+	metadata map[string]string
 
 	timestamp int64
 }
@@ -39,25 +50,92 @@ func NewMessage(msg string) *Message {
 		msg:       msg,
 		timestamp: time.Now().UnixNano(),
 		title:     "Generic Notification",
+		subtitle:  "Generic Notification Subtitle",
 	}
 
 	return m
 }
 
 func (msg *Message) SetMessage(new string) {
+	msg.m.Lock()
 	msg.msg = new
+	msg.m.Unlock()
 }
 
 func (msg *Message) SetTitle(title string) {
+	msg.m.Lock()
 	msg.title = title
+	msg.m.Unlock()
+}
+
+func (msg *Message) SetSubtitle(subtitle string) {
+	msg.m.Lock()
+	msg.subtitle = subtitle
+	msg.m.Unlock()
 }
 
 func (msg *Message) SetPriority(prio int) {
+	msg.m.Lock()
 	msg.priority = prio
+	msg.m.Unlock()
 }
 
 func (msg *Message) SetURL(url *url.URL) {
+	msg.m.Lock()
 	msg.url = url
+	msg.m.Unlock()
+}
+
+func (msg *Message) GetMessage() string {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.msg
+}
+
+func (msg *Message) GetTitle() string {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.title
+}
+
+func (msg *Message) GetSubtitle() string {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.subtitle
+}
+
+func (msg *Message) GetPriority() int {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.priority
+}
+
+func (msg *Message) GetURL() (*url.URL, error) {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	if msg.url != nil {
+		return msg.url, nil
+	} else {
+		return nil, errorNoURL
+	}
+}
+
+func (msg *Message) AddKVMetadata(key, value string) {
+	msg.m.Lock()
+	msg.metadata[key] = value
+	msg.m.Unlock()
+}
+
+func (msg *Message) GetMetadata() map[string]string {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.metadata
+}
+
+func (msg *Message) KeyExists(key string) bool {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.metadata[key] != ""
 }
 
 func (msg *Message) SetURLString(rawurl string) error {
@@ -70,6 +148,8 @@ func (msg *Message) SetURLString(rawurl string) error {
 }
 
 func (msg *Message) String() string {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
 	return "Title: " + msg.title + "\n" + "Message: " + msg.msg + "\n"
 }
 

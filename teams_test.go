@@ -26,68 +26,6 @@ import (
 	"testing"
 )
 
-func TestTeamsNotifier_generateRequest(t *testing.T) {
-	type fields struct {
-		RWMutex sync.RWMutex
-		config  *TeamsConfig
-		closed  bool
-	}
-	type args struct {
-		msg *Message
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *http.Request
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tr := &TeamsNotifier{
-				RWMutex: tt.fields.RWMutex,
-				config:  tt.fields.config,
-				closed:  tt.fields.closed,
-			}
-			if got := tr.generateRequest(tt.args.msg); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TeamsNotifier.generateRequest() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTeamsNotifier_parseResponse(t *testing.T) {
-	type fields struct {
-		RWMutex sync.RWMutex
-		config  *TeamsConfig
-		closed  bool
-	}
-	type args struct {
-		in0 *http.Response
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tr := &TeamsNotifier{
-				RWMutex: tt.fields.RWMutex,
-				config:  tt.fields.config,
-				closed:  tt.fields.closed,
-			}
-			if err := tr.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
-				t.Errorf("TeamsNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
 func TestTeamsNotifier_SendMessage(t *testing.T) {
 	type fields struct {
 		RWMutex sync.RWMutex
@@ -137,6 +75,74 @@ func TestTeamsConfig_Validate(t *testing.T) {
 			}
 			if got := c.Validate(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("TeamsConfig.Validate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTeamsNotifier_generateRequest(t *testing.T) {
+	type fields struct {
+		RWMutex sync.RWMutex
+		config  *TeamsConfig
+		closed  bool
+	}
+	type args struct {
+		msg *Message
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *http.Request
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tr := &TeamsNotifier{
+				RWMutex: tt.fields.RWMutex,
+				config:  tt.fields.config,
+				closed:  tt.fields.closed,
+			}
+			got, err := tr.generateRequest(tt.args.msg)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("TeamsNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TeamsNotifier.generateRequest() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTeamsNotifier_parseResponse(t *testing.T) {
+	type fields struct {
+		RWMutex sync.RWMutex
+		config  *TeamsConfig
+		closed  bool
+	}
+	type args struct {
+		in0 *http.Response
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tr := &TeamsNotifier{
+				RWMutex: tt.fields.RWMutex,
+				config:  tt.fields.config,
+				closed:  tt.fields.closed,
+			}
+			if err := tr.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
+				t.Errorf("TeamsNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
