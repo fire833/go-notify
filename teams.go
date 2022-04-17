@@ -19,22 +19,29 @@
 package gonotify
 
 import (
+	"net/http"
 	"net/url"
 	"sync"
 
 	"github.com/fire833/go-notify/pkg/common"
 )
 
+var (
+	localTransport http.RoundTripper = common.NotifyHTTPTransporter
+)
+
+type teamsNotificationReq struct {
+}
+
 type TeamsNotifier struct {
 	sync.RWMutex
+	config *TeamsConfig
 
 	closed bool
-
-	config *TeamsConfig
 }
 
 type TeamsConfig struct {
-	webhooks map[string]*url.URL
+	WebhookURL *url.URL
 }
 
 func NewTeamsNotifier() *TeamsNotifier {
@@ -44,31 +51,68 @@ func NewTeamsNotifier() *TeamsNotifier {
 	}
 }
 
+func NewTeamsNotifierConfig(config *TeamsConfig) (*TeamsNotifier, error) {
+	n := NewTeamsNotifier()
+	return n, n.Configure(config)
+}
+
+func NewTeamsNotifierConfigMust(config *TeamsConfig) *TeamsNotifier {
+	n := NewTeamsNotifier()
+	if e := n.Configure(config); e != nil {
+		panic(e)
+	}
+
+	return n
+}
+
 func (t *TeamsNotifier) SendMessage(msg *Message) error {
 	t.RLock()
 	defer t.RUnlock()
-
-	if t.isReady() {
-
-	}
-
-	return nil
-}
-
-func (t *TeamsNotifier) Configure(config *TeamsConfig) error {
-
-	return nil
-}
-
-func (t *TeamsNotifier) Close() error {
-	t.Lock()
-	defer t.Unlock()
 
 	if t.isClosed() {
 		return common.ErrorNotifierClosed
 	}
 
+	if t.isReady() {
+		r, e := localTransport.RoundTrip(t.generateRequest(msg))
+		e1 := t.parseResponse(r)
+
+		if e != nil || e1 != nil {
+			return common.ErrorNotificationSendError
+		}
+
+	} else {
+		return common.ErrorNotifierNotReady
+	}
+
+	return nil
+}
+
+// Configure configures the notifier with proper configuration for its operation.
+func (t *TeamsNotifier) Configure(config *TeamsConfig) error {
+
+	if e := config.Validate(); e != nil {
+		return common.ErrorInvalidConfiguration
+	}
+
+	t.Lock()
+	t.config = config
+	t.Unlock()
+
+	return nil
+}
+
+// Close closes out the notifier. Returns an error if unable to or if the Notifier
+// has already been closed.
+func (t *TeamsNotifier) Close() error {
+
+	if t.isClosed() {
+		return common.ErrorNotifierClosed
+	}
+
+	t.Lock()
 	t.closed = true
+	t.Unlock()
 
 	return nil
 }
@@ -77,28 +121,22 @@ func (t *TeamsNotifier) isReady() bool {
 	t.RLock()
 	defer t.RUnlock()
 
-	// If the notifier is closed, auto failout
-	if t.isClosed() {
-		return false
-	}
-
-	// If the notifier has not been configured, auto failout
-	if t.config == nil {
-		return false
-	}
-
-	return true
+	return t.config != nil
 }
 
 func (t *TeamsNotifier) isClosed() bool {
 	t.RLock()
 	defer t.RUnlock()
 
-	if t.closed {
-		return true
-	} else {
-		return false
-	}
+	return t.closed
+}
+
+func (t *TeamsNotifier) generateRequest(msg *Message) *http.Request {
+	return nil
+}
+
+func (t *TeamsNotifier) parseResponse(*http.Response) error {
+	return nil
 }
 
 func (c *TeamsConfig) Validate() []error {

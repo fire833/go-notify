@@ -24,5 +24,10 @@ var (
 	ErrorNoBackend         error = errors.New("backend not found")
 	ErrorNoBackendInstance error = errors.New("backend instance not found")
 
-	ErrorNotifierClosed error = errors.New("the desired notifier has been closed and decomissioned")
+	ErrorNotifierClosed   error = errors.New("the desired notifier has been closed and decomissioned")
+	ErrorNotifierNotReady error = errors.New("the desired notifier is not ready yet")
+
+	ErrorInvalidConfiguration error = errors.New("the configuration provided is invalid")
+
+	ErrorNotificationSendError error = errors.New("unable to send notification via the desired backend")
 )
