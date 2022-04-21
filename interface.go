@@ -30,7 +30,7 @@ type Notifier interface {
 	// the configuration legitimately changes for whatever reason.
 	//
 	// Should be thread-safe to call at any point at runtime.
-	Configure(config *NotifierConfig) error
+	Configure(config NotifierConfig) error
 
 	// SendMessage basically does what you think it would do, it sends
 	// a notification message over the desired Notifier and reports back
@@ -55,4 +55,7 @@ type NotifierConfig interface {
 	// that are associated with said configuration. If len(errors)
 	// is 0, then the configuration should be considered valid.
 	Validate() []error
+
+	// Returns the key value data from the configuration.
+	GetData() map[string]interface{}
 }

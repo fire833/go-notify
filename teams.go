@@ -22,31 +22,28 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"sync"
-
-	"github.com/fire833/go-notify/pkg/common"
 )
 
 var ()
 
 type TeamsNotifier struct {
 	sync.RWMutex
-	config *TeamsConfig
-
-	closed bool
+	genericHTTPNotifier
 }
 
 type TeamsConfig struct {
-	WebhookURL *url.URL
+	WebhookURL string
 
 	Color string
 }
 
 func NewTeamsNotifier() *TeamsNotifier {
 	return &TeamsNotifier{
-		closed: false,
-		config: nil,
+		genericHTTPNotifier: genericHTTPNotifier{
+			config: NewDefaultTeamsConfig(),
+			closed: false,
+		},
 	}
 }
 
@@ -64,70 +61,15 @@ func NewTeamsNotifierConfigMust(config *TeamsConfig) *TeamsNotifier {
 	return n
 }
 
+func NewDefaultTeamsConfig() *TeamsConfig {
+	return &TeamsConfig{
+		WebhookURL: "www.example.com",
+		Color:      "0076D7",
+	}
+}
+
 func (t *TeamsNotifier) SendMessage(msg *Message) error {
-	t.RLock()
-	defer t.RUnlock()
-
-	if t.isClosed() {
-		return common.ErrorNotifierClosed
-	}
-
-	if t.isReady() {
-		req, e := t.generateRequest(msg)
-		if e != nil {
-			return common.ErrorNotifierSerializationError
-		}
-
-		resp, e1 := common.NotifyHTTPTransporter.RoundTrip(req)
-		e2 := t.parseResponse(resp)
-
-		if e1 != nil || e2 != nil {
-			return common.ErrorNotificationSendError
-		}
-
-	} else {
-		return common.ErrorNotifierNotReady
-	}
-
-	return nil
-}
-
-// Configure configures the notifier with proper configuration for its operation.
-func (t *TeamsNotifier) Configure(config *TeamsConfig) error {
-	if e := config.Validate(); e != nil {
-		return common.ErrorInvalidConfiguration
-	}
-
-	t.Lock()
-	t.config = config
-	t.Unlock()
-	return nil
-}
-
-// Close closes out the notifier. Returns an error if unable to or if the Notifier
-// has already been closed.
-func (t *TeamsNotifier) Close() error {
-
-	if t.isClosed() {
-		return common.ErrorNotifierClosed
-	}
-
-	t.Lock()
-	t.closed = true
-	t.Unlock()
-	return nil
-}
-
-func (t *TeamsNotifier) isReady() bool {
-	t.RLock()
-	defer t.RUnlock()
-	return t.config != nil
-}
-
-func (t *TeamsNotifier) isClosed() bool {
-	t.RLock()
-	defer t.RUnlock()
-	return t.closed
+	return t.sendMessageInternal(msg, t.generateRequest, t.parseResponse)
 }
 
 // Internal method to generate the request for Teams incoming webhook from
@@ -145,7 +87,7 @@ func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
 		"@context":   "http://schema.org/extensions",
 		"summary":    msg.subtitle,
 		"title":      msg.title,
-		"themeColor": t.config.Color,
+		"themeColor": "",
 
 		"sections": []map[string]interface{}{
 			{
@@ -159,7 +101,7 @@ func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
 		return nil, e
 	}
 
-	return http.NewRequest("POST", t.config.WebhookURL.String(), bytes.NewReader(bdata))
+	return http.NewRequest("POST", "", bytes.NewReader(bdata))
 
 }
 
@@ -169,4 +111,11 @@ func (t *TeamsNotifier) parseResponse(*http.Response) error {
 
 func (c *TeamsConfig) Validate() []error {
 	return nil
+}
+
+func (c *TeamsConfig) GetData() map[string]interface{} {
+	return map[string]interface{}{
+		"url":   c.WebhookURL,
+		"color": c.Color,
+	}
 }

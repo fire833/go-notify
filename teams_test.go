@@ -20,71 +20,15 @@ package gonotify
 
 import (
 	"net/http"
-	"net/url"
 	"reflect"
 	"sync"
 	"testing"
 )
 
-func TestTeamsNotifier_SendMessage(t *testing.T) {
-	type fields struct {
-		RWMutex sync.RWMutex
-		config  *TeamsConfig
-		closed  bool
-	}
-	type args struct {
-		msg *Message
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tr := &TeamsNotifier{
-				RWMutex: tt.fields.RWMutex,
-				config:  tt.fields.config,
-				closed:  tt.fields.closed,
-			}
-			if err := tr.SendMessage(tt.args.msg); (err != nil) != tt.wantErr {
-				t.Errorf("TeamsNotifier.SendMessage() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestTeamsConfig_Validate(t *testing.T) {
-	type fields struct {
-		WebhookURL *url.URL
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []error
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &TeamsConfig{
-				WebhookURL: tt.fields.WebhookURL,
-			}
-			if got := c.Validate(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TeamsConfig.Validate() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestTeamsNotifier_generateRequest(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  *TeamsConfig
-		closed  bool
+		RWMutex             sync.RWMutex
+		genericHTTPNotifier genericHTTPNotifier
 	}
 	type args struct {
 		msg *Message
@@ -101,9 +45,8 @@ func TestTeamsNotifier_generateRequest(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tr := &TeamsNotifier{
-				RWMutex: tt.fields.RWMutex,
-				config:  tt.fields.config,
-				closed:  tt.fields.closed,
+				RWMutex:             tt.fields.RWMutex,
+				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
 			}
 			got, err := tr.generateRequest(tt.args.msg)
 			if (err != nil) != tt.wantErr {
@@ -119,9 +62,8 @@ func TestTeamsNotifier_generateRequest(t *testing.T) {
 
 func TestTeamsNotifier_parseResponse(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  *TeamsConfig
-		closed  bool
+		RWMutex             sync.RWMutex
+		genericHTTPNotifier genericHTTPNotifier
 	}
 	type args struct {
 		in0 *http.Response
@@ -137,12 +79,90 @@ func TestTeamsNotifier_parseResponse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tr := &TeamsNotifier{
-				RWMutex: tt.fields.RWMutex,
-				config:  tt.fields.config,
-				closed:  tt.fields.closed,
+				RWMutex:             tt.fields.RWMutex,
+				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
 			}
 			if err := tr.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
 				t.Errorf("TeamsNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestTeamsConfig_Validate(t *testing.T) {
+	type fields struct {
+		WebhookURL string
+		Color      string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []error
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &TeamsConfig{
+				WebhookURL: tt.fields.WebhookURL,
+				Color:      tt.fields.Color,
+			}
+			if got := c.Validate(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TeamsConfig.Validate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTeamsConfig_GetData(t *testing.T) {
+	type fields struct {
+		WebhookURL string
+		Color      string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   map[string]interface{}
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &TeamsConfig{
+				WebhookURL: tt.fields.WebhookURL,
+				Color:      tt.fields.Color,
+			}
+			if got := c.GetData(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TeamsConfig.GetData() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTeamsNotifier_SendMessage(t *testing.T) {
+	type fields struct {
+		RWMutex             sync.RWMutex
+		genericHTTPNotifier genericHTTPNotifier
+	}
+	type args struct {
+		msg *Message
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tr := &TeamsNotifier{
+				RWMutex:             tt.fields.RWMutex,
+				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
+			}
+			if err := tr.SendMessage(tt.args.msg); (err != nil) != tt.wantErr {
+				t.Errorf("TeamsNotifier.SendMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
