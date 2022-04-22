@@ -17,3 +17,64 @@
  */
 
 package gonotify
+
+import "net/http"
+
+type SlackNotifier struct {
+	genericHTTPNotifier
+}
+
+type SlackConfig struct {
+	WebhookURL string
+}
+
+func NewSlackNotifier() *SlackNotifier {
+	return &SlackNotifier{
+		genericHTTPNotifier: genericHTTPNotifier{
+			config: NewDefaultSlackConfig(),
+			closed: false,
+		},
+	}
+}
+
+func NewSlackNotifierConfig(config *SlackConfig) (*SlackNotifier, error) {
+	n := NewSlackNotifier()
+	return n, n.Configure(config)
+}
+
+func NewSlackNotifierConfigMust(config *SlackConfig) *SlackNotifier {
+	n := NewSlackNotifier()
+	if e := n.Configure(config); e != nil {
+		panic(e)
+	}
+
+	return n
+}
+
+func NewDefaultSlackConfig() *SlackConfig {
+	return &SlackConfig{
+		WebhookURL: "www.example.com",
+	}
+}
+
+func (s *SlackNotifier) SendMessage(msg *Message) error {
+	return s.sendMessageInternal(msg, s.generateRequest, s.parseResponse)
+}
+
+func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {
+	return nil, nil
+}
+
+func (s *SlackNotifier) parseResponse(*http.Response) error {
+	return nil
+}
+
+func (c *SlackConfig) Validate() []error {
+	return nil
+}
+
+func (c *SlackConfig) GetData() map[string]interface{} {
+	return map[string]interface{}{
+		"url": c.WebhookURL,
+	}
+}
