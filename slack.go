@@ -58,7 +58,11 @@ func NewDefaultSlackConfig() *SlackConfig {
 }
 
 func (s *SlackNotifier) SendMessage(msg *Message) error {
-	return s.sendMessageInternal(msg, s.generateRequest, s.parseResponse)
+	return s.sendMessageInternal(msg, s.generateRequest, s.parseResponse, s.validateMessage)
+}
+
+func (s *SlackNotifier) validateMessage(msg *Message) error {
+	return nil
 }
 
 func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {

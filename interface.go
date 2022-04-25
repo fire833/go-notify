@@ -43,8 +43,14 @@ type Notifier interface {
 	// that could return an error, returning ErrorNotifierClosed.
 	Close() error
 
+	// Determines whether the notifier object is closed/ready to send messages.
 	isReady() bool
 	isClosed() bool
+
+	// validateMessage validates that the incoming message to send is compliant with
+	// the requirements for the notifier backend. Should be called internally inside
+	// of SendMessage().
+	validateMessage(msg *Message) error
 }
 
 // NotifierConfig implements a generic interface for specifying the

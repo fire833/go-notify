@@ -69,7 +69,11 @@ func NewDefaultTeamsConfig() *TeamsConfig {
 }
 
 func (t *TeamsNotifier) SendMessage(msg *Message) error {
-	return t.sendMessageInternal(msg, t.generateRequest, t.parseResponse)
+	return t.sendMessageInternal(msg, t.generateRequest, t.parseResponse, t.validateMessage)
+}
+
+func (t *TeamsNotifier) validateMessage(msg *Message) error {
+	return nil
 }
 
 // Internal method to generate the request for Teams incoming webhook from

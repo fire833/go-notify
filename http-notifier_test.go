@@ -31,9 +31,10 @@ func Test_genericHTTPNotifier_sendMessageInternal(t *testing.T) {
 		closed  bool
 	}
 	type args struct {
-		msg       *Message
-		genReq    func(msg *Message) (*http.Request, error)
-		parseResp func(*http.Response) error
+		msg          *Message
+		genReq       func(msg *Message) (*http.Request, error)
+		parseResp    func(*http.Response) error
+		validateFunc func(msg *Message) error
 	}
 	tests := []struct {
 		name    string
@@ -50,7 +51,7 @@ func Test_genericHTTPNotifier_sendMessageInternal(t *testing.T) {
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}
-			if err := n.sendMessageInternal(tt.args.msg, tt.args.genReq, tt.args.parseResp); (err != nil) != tt.wantErr {
+			if err := n.sendMessageInternal(tt.args.msg, tt.args.genReq, tt.args.parseResp, tt.args.validateFunc); (err != nil) != tt.wantErr {
 				t.Errorf("genericHTTPNotifier.sendMessageInternal() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

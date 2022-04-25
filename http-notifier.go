@@ -37,13 +37,18 @@ type genericHTTPNotifier struct {
 
 func (n *genericHTTPNotifier) sendMessageInternal(msg *Message,
 	genReq func(msg *Message) (*http.Request, error),
-	parseResp func(*http.Response) error) error {
+	parseResp func(*http.Response) error,
+	validateFunc func(msg *Message) error) error {
 
 	n.RLock()
 	defer n.RUnlock()
 
 	if n.isClosed() {
 		return common.ErrorNotifierClosed
+	}
+
+	if e := validateFunc(msg); e != nil {
+		return e
 	}
 
 	if n.isReady() {
