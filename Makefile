@@ -15,6 +15,16 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+VERSION		=	v0.0.1
+COMMIT		=	$(shell git rev-parse HEAD)
+DATE		=	$(shell date)
+
+GO			=	$(shell which go)
+DOCKER		=	$(shell which docker)
+
 default:
 
 test:
+	@echo "running all unit tests..."
+	${GO} test -v ./...
+

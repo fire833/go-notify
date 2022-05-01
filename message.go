@@ -32,16 +32,16 @@ var (
 type Message struct {
 	m sync.RWMutex
 
-	msg string
+	msg string `json:"message" yaml:"message"`
 
-	title    string
-	subtitle string
-	priority int
-	url      *url.URL
+	title    string   `json:"title,omitempty" yaml:"title,omitempty"`
+	subtitle string   `json:"subtitle,omitempty" yaml:"subtitle,omitempty"`
+	priority int      `json:"priority,omitempty" yaml:"priority,omitempty"`
+	url      *url.URL `json:"url,omitempty" yaml:"url,omitempty"`
 
-	metadata map[string]string
+	metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
-	timestamp int64
+	timestamp int64 `json:"timestamp" yaml:"timestamp"`
 }
 
 func NewMessage(msg string) *Message {
@@ -51,6 +51,9 @@ func NewMessage(msg string) *Message {
 		timestamp: time.Now().UnixNano(),
 		title:     "Generic Notification",
 		subtitle:  "Generic Notification Subtitle",
+		metadata:  map[string]interface{}{},
+		url:       nil,
+		priority:  1,
 	}
 
 	return m
@@ -120,22 +123,29 @@ func (msg *Message) GetURL() (*url.URL, error) {
 	}
 }
 
-func (msg *Message) AddKVMetadata(key, value string) {
+func (msg *Message) AddKVMetadata(key string, value interface{}) {
 	msg.m.Lock()
 	msg.metadata[key] = value
 	msg.m.Unlock()
 }
 
-func (msg *Message) GetMetadata() map[string]string {
+func (msg *Message) GetValue() map[string]interface{} {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
 	return msg.metadata
 }
 
+// Returns whether the defined key has a value inside of it.
 func (msg *Message) KeyExists(key string) bool {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
-	return msg.metadata[key] != ""
+	return msg.metadata[key] != nil
+}
+
+func (msg *Message) GetMetadata(key string) interface{} {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.metadata[key]
 }
 
 func (msg *Message) SetURLString(rawurl string) error {
@@ -151,6 +161,14 @@ func (msg *Message) String() string {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
 	return "Title: " + msg.title + "\n" + "Message: " + msg.msg + "\n"
+}
+
+func (msg *Message) MarshalJSON() ([]byte, error) {
+	var buf []byte
+	msg.m.RLock()
+
+	msg.m.RUnlock()
+	return buf, nil
 }
 
 // Implement the io.Reader interface for the message, and thus

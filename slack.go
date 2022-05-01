@@ -18,7 +18,9 @@
 
 package gonotify
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type SlackNotifier struct {
 	genericHTTPNotifier
