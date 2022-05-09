@@ -23,6 +23,8 @@ import (
 	"net/url"
 	"sync"
 	"time"
+
+	"github.com/fire833/go-notify/pkg/utils"
 )
 
 var (
@@ -165,7 +167,23 @@ func (msg *Message) String() string {
 
 func (msg *Message) MarshalJSON() ([]byte, error) {
 	var buf []byte
+
+	buf = append(buf, '{')
+	utils.AppendNL(buf)
+
 	msg.m.RLock()
+
+	if msg.title != "" {
+		utils.AppendJSONKV(buf, "title", msg.title)
+	}
+
+	if msg.subtitle != "" {
+		utils.AppendJSONKV(buf, "subtitle", msg.subtitle)
+	}
+
+	if msg.msg != "" {
+		utils.AppendJSONKV(buf, "message", msg.msg)
+	}
 
 	msg.m.RUnlock()
 	return buf, nil

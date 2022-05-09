@@ -237,3 +237,49 @@ func TestMessage_SetMessage(t *testing.T) {
 	// wg.Wait()
 
 }
+
+func TestMessage_String(t *testing.T) {
+
+	t1 := NewMessage("A new message.")
+	t2 := NewMessage("")
+	t2.SetMessage("3485yusdfhdfjkshfjkshf8934hjsdhfg")
+	t3 := NewMessage("jksdhjklgio54u89ghdfjkghfm,ghiory")
+	t3.SetMessage("12345")
+	t3.SetMessage("jksdhjklgio54u89ghdfjkghfm,ghiory")
+	t4 := NewMessage("12345")
+	t4.SetTitle("A Title")
+
+	tests := []struct {
+		name string
+		msg  *Message
+		want string
+	}{
+		{
+			name: "1",
+			msg:  t1,
+			want: "Title: Generic Notification\nMessage: A new message.\n",
+		},
+		{
+			name: "2",
+			msg:  t2,
+			want: "Title: Generic Notification\nMessage: 3485yusdfhdfjkshfjkshf8934hjsdhfg\n",
+		},
+		{
+			name: "3",
+			msg:  t3,
+			want: "Title: Generic Notification\nMessage: jksdhjklgio54u89ghdfjkghfm,ghiory\n",
+		},
+		{
+			name: "4",
+			msg:  t4,
+			want: "Title: A Title\nMessage: 12345\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.msg.String(); got != tt.want {
+				t.Errorf("Message.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

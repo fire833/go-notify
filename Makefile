@@ -26,5 +26,5 @@ default:
 
 test:
 	@echo "running all unit tests..."
-	${GO} test -v ./...
+	${GO} test -v -cover ./...
 
