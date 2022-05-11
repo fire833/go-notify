@@ -18,20 +18,55 @@
 
 package utils
 
-func AppendNSpaces(buf []byte, num int) {
+import "fmt"
+
+func AppendNSpaces(buf []byte, num int) []byte {
 	for i := 0; i < num; i++ {
 		buf = append(buf, ' ')
 	}
+	return buf
 }
 
-func AppendNL(buf []byte) {
+func AppendNL(buf []byte) []byte {
 	buf = append(buf, '\n')
+	return buf
 }
 
-func AppendJSONKV(buf []byte, key string, value interface{}) {
+func CommaNL(buf []byte) []byte {
+	buf = append(buf, ',')
+	AppendNL(buf)
+	return buf
+}
 
-	// kbytes := []byte(key)
+// Adds a new line of JSON w/ a k/v pair.
+// Like this:
+// "key" : value
+//
+// Done with no preceding spaces and no succeeding comma.
+func AppendJSONKV(buf []byte, key string, value interface{}) []byte {
+	kbytes := []byte(key)
 
-	// buf = append(buf, '"', kbytes)
+	buf = append(buf, '"')
+	buf = append(buf, kbytes...)
 
+	buf = append(buf, `" : `...)
+
+	switch value.(type) {
+	case string:
+		{
+			b := []byte(fmt.Sprintf("%s", value))
+
+			buf = append(buf, `"`...)
+			buf = append(buf, b...)
+			buf = append(buf, `"`...)
+		}
+	default:
+		{
+			b := []byte(fmt.Sprintf("%v", value))
+
+			buf = append(buf, b...)
+		}
+	}
+
+	return buf
 }

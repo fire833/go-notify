@@ -169,20 +169,31 @@ func (msg *Message) MarshalJSON() ([]byte, error) {
 	var buf []byte
 
 	buf = append(buf, '{')
-	utils.AppendNL(buf)
+	buf = utils.AppendNL(buf)
 
 	msg.m.RLock()
 
 	if msg.title != "" {
-		utils.AppendJSONKV(buf, "title", msg.title)
+		buf = utils.AppendNSpaces(buf, 3)
+		buf = utils.AppendJSONKV(buf, "title", msg.title)
 	}
 
 	if msg.subtitle != "" {
-		utils.AppendJSONKV(buf, "subtitle", msg.subtitle)
+		buf = utils.CommaNL(buf)
+		buf = utils.AppendNSpaces(buf, 3)
+		buf = utils.AppendJSONKV(buf, "subtitle", msg.subtitle)
 	}
 
 	if msg.msg != "" {
-		utils.AppendJSONKV(buf, "message", msg.msg)
+		buf = utils.CommaNL(buf)
+		buf = utils.AppendNSpaces(buf, 3)
+		buf = utils.AppendJSONKV(buf, "message", msg.msg)
+	}
+
+	if msg.url != nil {
+		buf = utils.CommaNL(buf)
+		buf = utils.AppendNSpaces(buf, 3)
+		buf = utils.AppendJSONKV(buf, "url", msg.url.String())
 	}
 
 	msg.m.RUnlock()
