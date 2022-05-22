@@ -51,7 +51,7 @@ func NewPushoverNotifierConfig(config *PushoverConfig) (*PushoverNotifier, error
 	return n, n.Configure(config)
 }
 
-func NewPushoverNotifierConfigMust(config *SlackConfig) *PushoverNotifier {
+func NewPushoverNotifierConfigMust(config *PushoverConfig) *PushoverNotifier {
 	n := NewPushoverNotifier()
 	if e := n.Configure(config); e != nil {
 		panic(e)
@@ -60,10 +60,8 @@ func NewPushoverNotifierConfigMust(config *SlackConfig) *PushoverNotifier {
 	return n
 }
 
-func NewDefaultPushoverConfig() *SlackConfig {
-	return &SlackConfig{
-		WebhookURL: "www.example.com",
-	}
+func NewDefaultPushoverConfig() *PushoverConfig {
+	return &PushoverConfig{}
 }
 
 func (p *PushoverNotifier) SendMessage(msg *Message) error {
