@@ -131,7 +131,7 @@ func (msg *Message) AddKVMetadata(key string, value interface{}) {
 	msg.m.Unlock()
 }
 
-func (msg *Message) GetValue() map[string]interface{} {
+func (msg *Message) GetMetadata() map[string]interface{} {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
 	return msg.metadata
@@ -144,7 +144,7 @@ func (msg *Message) KeyExists(key string) bool {
 	return msg.metadata[key] != nil
 }
 
-func (msg *Message) GetMetadata(key string) interface{} {
+func (msg *Message) GetValue(key string) interface{} {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
 	return msg.metadata[key]

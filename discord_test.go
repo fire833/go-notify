@@ -20,47 +20,58 @@ package gonotify
 
 import (
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 )
 
-func TestGotifyConfig_Validate(t *testing.T) {
+func TestDiscordConfig_Validate(t *testing.T) {
+	type fields struct {
+		WebhookURL *url.URL
+	}
 	tests := []struct {
-		name string
-		g    *GotifyConfig
-		want []error
+		name   string
+		fields fields
+		want   []error
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyConfig{}
-			if got := g.Validate(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GotifyConfig.Validate() = %v, want %v", got, tt.want)
+			c := &DiscordConfig{
+				WebhookURL: tt.fields.WebhookURL,
+			}
+			if got := c.Validate(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DiscordConfig.Validate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestGotifyConfig_GetData(t *testing.T) {
+func TestDiscordConfig_GetData(t *testing.T) {
+	type fields struct {
+		WebhookURL *url.URL
+	}
 	tests := []struct {
-		name string
-		g    *GotifyConfig
-		want map[string]interface{}
+		name   string
+		fields fields
+		want   map[string]interface{}
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyConfig{}
-			if got := g.GetData(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GotifyConfig.GetData() = %v, want %v", got, tt.want)
+			c := &DiscordConfig{
+				WebhookURL: tt.fields.WebhookURL,
+			}
+			if got := c.GetData(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DiscordConfig.GetData() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestGotifyNotifier_validateMessage(t *testing.T) {
+func TestDiscordNotifier_validateMessage(t *testing.T) {
 	type fields struct {
 		genericHTTPNotifier genericHTTPNotifier
 	}
@@ -77,17 +88,17 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
+			d := &DiscordNotifier{
 				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
 			}
-			if err := g.validateMessage(tt.args.msg); (err != nil) != tt.wantErr {
-				t.Errorf("GotifyNotifier.validateMessage() error = %v, wantErr %v", err, tt.wantErr)
+			if err := d.validateMessage(tt.args.msg); (err != nil) != tt.wantErr {
+				t.Errorf("DiscordNotifier.validateMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestGotifyNotifier_generateRequest(t *testing.T) {
+func TestDiscordNotifier_generateRequest(t *testing.T) {
 	type fields struct {
 		genericHTTPNotifier genericHTTPNotifier
 	}
@@ -105,22 +116,22 @@ func TestGotifyNotifier_generateRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
+			d := &DiscordNotifier{
 				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
 			}
-			got, err := g.generateRequest(tt.args.msg)
+			got, err := d.generateRequest(tt.args.msg)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GotifyNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DiscordNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GotifyNotifier.generateRequest() = %v, want %v", got, tt.want)
+				t.Errorf("DiscordNotifier.generateRequest() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestGotifyNotifier_parseResponse(t *testing.T) {
+func TestDiscordNotifier_parseResponse(t *testing.T) {
 	type fields struct {
 		genericHTTPNotifier genericHTTPNotifier
 	}
@@ -137,11 +148,11 @@ func TestGotifyNotifier_parseResponse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
+			d := &DiscordNotifier{
 				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
 			}
-			if err := g.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
-				t.Errorf("GotifyNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
+			if err := d.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
+				t.Errorf("DiscordNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

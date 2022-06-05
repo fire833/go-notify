@@ -33,9 +33,8 @@ type TeamsNotifier struct {
 }
 
 type TeamsConfig struct {
-	WebhookURL string
-
-	Color string
+	WebhookURL string `json:"teamsWebhookURL" yaml:"teamsWebhookURL"`
+	Color      string `json:"teamsColor" yaml:"teamsColor"`
 }
 
 func NewTeamsNotifier() *TeamsNotifier {
@@ -80,22 +79,16 @@ func (t *TeamsNotifier) validateMessage(msg *Message) error {
 // a message. Callers should have a read lock already on the TeamsNotifier struct.
 func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
 
-	// generate the kv object.
-	fields := map[string]interface{}{}
-	for key, value := range msg.metadata {
-		fields[key] = value
-	}
-
 	body := &map[string]interface{}{
 		"@type":      "MessageCard",
 		"@context":   "http://schema.org/extensions",
-		"summary":    msg.subtitle,
-		"title":      msg.title,
-		"themeColor": "",
+		"summary":    msg.GetSubtitle(),
+		"title":      msg.GetTitle(),
+		"themeColor": t.config.GetData()["color"],
 
 		"sections": []map[string]interface{}{
 			{
-				"text": msg.msg,
+				"text": msg.GetMessage(),
 			},
 		},
 	}
@@ -119,7 +112,10 @@ func (c *TeamsConfig) Validate() []error {
 
 func (c *TeamsConfig) GetData() map[string]interface{} {
 	return map[string]interface{}{
-		"url":   c.WebhookURL,
-		"color": c.Color,
+		"url":   c.getWebhookURL(),
+		"color": c.getColor(),
 	}
 }
+
+func (c *TeamsConfig) getColor() string      { return c.Color }
+func (c *TeamsConfig) getWebhookURL() string { return c.WebhookURL }

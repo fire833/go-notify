@@ -21,16 +21,10 @@ package gonotify
 import (
 	"net/http"
 	"net/url"
-	"sync"
-
-	"github.com/fire833/go-notify/pkg/common"
 )
 
 type DiscordNotifier struct {
-	sync.RWMutex
-	config *DiscordConfig
-
-	closed bool
+	genericHTTPNotifier
 }
 
 type DiscordConfig struct {
@@ -38,10 +32,7 @@ type DiscordConfig struct {
 }
 
 func NewDiscordNotifier() *DiscordNotifier {
-	return &DiscordNotifier{
-		closed: false,
-		config: nil,
-	}
+	return &DiscordNotifier{}
 }
 
 func NewDiscordNotifierConfig(config *DiscordConfig) (*DiscordNotifier, error) {
@@ -58,70 +49,16 @@ func NewDiscordNotifierConfigMust(config *DiscordConfig) *DiscordNotifier {
 	return n
 }
 
+func NewDefaultDiscordConfig() *DiscordConfig {
+	return &DiscordConfig{}
+}
+
 func (d *DiscordNotifier) SendMessage(msg *Message) error {
-	d.RLock()
-	defer d.RUnlock()
+	return d.sendMessageInternal(msg, d.generateRequest, d.parseResponse, d.validateMessage)
+}
 
-	if d.isClosed() {
-		return common.ErrorNotifierClosed
-	}
-
-	if d.isReady() {
-		req, e := d.generateRequest(msg)
-		if e != nil {
-			return common.ErrorNotifierSerializationError
-		}
-
-		resp, e1 := common.NotifyHTTPTransporter.RoundTrip(req)
-		e2 := d.parseResponse(resp)
-
-		if e1 != nil || e2 != nil {
-			return common.ErrorNotificationSendError
-		}
-
-	} else {
-		return common.ErrorNotifierNotReady
-	}
-
+func (d *DiscordNotifier) validateMessage(msg *Message) error {
 	return nil
-}
-
-// Configure configures the notifier with proper configuration for its operation.
-func (d *DiscordNotifier) Configure(config *DiscordConfig) error {
-	if e := config.Validate(); e != nil {
-		return common.ErrorInvalidConfiguration
-	}
-
-	d.Lock()
-	d.config = config
-	d.Unlock()
-	return nil
-}
-
-// Close closes out the notifier. Returns an error if unable to or if the Notifier
-// has already been closed.
-func (d *DiscordNotifier) Close() error {
-
-	if d.isClosed() {
-		return common.ErrorNotifierClosed
-	}
-
-	d.Lock()
-	d.closed = true
-	d.Unlock()
-	return nil
-}
-
-func (d *DiscordNotifier) isReady() bool {
-	d.RLock()
-	defer d.RUnlock()
-	return d.config != nil
-}
-
-func (d *DiscordNotifier) isClosed() bool {
-	d.RLock()
-	defer d.RUnlock()
-	return d.closed
 }
 
 func (d *DiscordNotifier) generateRequest(msg *Message) (*http.Request, error) {
@@ -134,4 +71,8 @@ func (d *DiscordNotifier) parseResponse(*http.Response) error {
 
 func (c *DiscordConfig) Validate() []error {
 	return nil
+}
+
+func (c *DiscordConfig) GetData() map[string]interface{} {
+	return map[string]interface{}{}
 }

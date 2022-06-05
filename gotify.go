@@ -18,13 +18,19 @@
 
 package gonotify
 
-import "net/http"
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+)
 
 type GotifyNotifier struct {
 	genericHTTPNotifier
 }
 
 type GotifyConfig struct {
+	Host   string `json:"gotifyHost" yaml:"gotifyHost"`
+	APIKey string `json:"gotifyAPIKey" yaml:"gotifyAPIKey"`
 }
 
 func NewGotifyNotifier() *GotifyNotifier {
@@ -59,9 +65,19 @@ func (g *GotifyNotifier) validateMessage(msg *Message) error {
 
 func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
 
-	// http.NewRequest("POST", urlgen.createURL())
+	body := &map[string]interface{}{
+		"message":  msg.GetMessage(),
+		"priority": msg.GetPriority(),
+		"title":    msg.GetTitle(),
+		"extras":   msg.GetMetadata(),
+	}
 
-	return nil, nil
+	bdata, e := json.Marshal(body)
+	if e != nil {
+		return nil, e
+	}
+
+	return http.NewRequest("POST", "", bytes.NewReader(bdata))
 }
 
 func (g *GotifyNotifier) parseResponse(*http.Response) error {
