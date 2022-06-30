@@ -61,6 +61,20 @@ func TestGotifyConfig_GetData(t *testing.T) {
 }
 
 func TestGotifyNotifier_validateMessage(t *testing.T) {
+	msg1 := NewMessage("a message goes here")
+	msg1.SetTitle("")
+	msg1.SetPriority(0)
+	msg2 := NewMessage("a message that occurred")
+	msg2.SetPriority(2)
+	msg2.SetTitle("title")
+	msg3 := NewMessage("")
+	msg4 := NewMessage("a message")
+	msg4.SetPriority(6)
+	msg4.SetTitle("")
+	msg5 := NewMessage("237483749")
+	msg5.SetTitle("The title of this message")
+	msg5.SetPriority(-3)
+
 	type fields struct {
 		genericHTTPNotifier genericHTTPNotifier
 	}
@@ -73,7 +87,56 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "1",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: msg1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "2",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: msg2,
+			},
+			wantErr: false,
+		},
+		{
+			name: "3",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: msg3,
+			},
+			wantErr: true,
+		},
+		{
+			name: "4",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: msg4,
+			},
+			wantErr: true,
+		},
+		{
+			name: "5",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: msg5,
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

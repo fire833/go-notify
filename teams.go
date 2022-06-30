@@ -102,7 +102,7 @@ func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
 
 }
 
-func (t *TeamsNotifier) parseResponse(*http.Response) error {
+func (t *TeamsNotifier) parseResponse(resp *http.Response) error {
 	return nil
 }
 

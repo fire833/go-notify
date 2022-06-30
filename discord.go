@@ -65,7 +65,7 @@ func (d *DiscordNotifier) generateRequest(msg *Message) (*http.Request, error) {
 	return nil, nil
 }
 
-func (d *DiscordNotifier) parseResponse(*http.Response) error {
+func (d *DiscordNotifier) parseResponse(resp *http.Response) error {
 	return nil
 }
 

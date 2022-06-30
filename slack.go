@@ -71,7 +71,7 @@ func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {
 	return nil, nil
 }
 
-func (s *SlackNotifier) parseResponse(*http.Response) error {
+func (s *SlackNotifier) parseResponse(resp *http.Response) error {
 	return nil
 }
 

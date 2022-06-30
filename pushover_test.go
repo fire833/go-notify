@@ -147,8 +147,38 @@ func TestPushoverNotifier_validateMessage(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "1",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: NewMessage(""),
+			},
+			wantErr: true,
+		},
+		{
+			name: "2",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: NewMessage("3489rsdfhsdjkvhxcjkvhxcv"),
+			},
+			wantErr: false,
+		},
+		{
+			name: "3",
+			fields: fields{
+				genericHTTPNotifier: genericHTTPNotifier{},
+			},
+			args: args{
+				msg: NewMessage("a random notification message here"),
+			},
+			wantErr: false,
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &PushoverNotifier{

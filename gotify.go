@@ -21,6 +21,7 @@ package gonotify
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -60,6 +61,22 @@ func (g *GotifyNotifier) SendMessage(msg *Message) error {
 }
 
 func (g *GotifyNotifier) validateMessage(msg *Message) error {
+	if msg.GetMessage() == "" {
+		return errors.New("gotify: message body is required for notification")
+	}
+
+	if msg.GetTitle() == "" {
+		return errors.New("gotify: message title is required for notification")
+	}
+
+	if msg.GetPriority() < 0 {
+		return errors.New("gotify: message priority is required for notification")
+	}
+
+	// if msg.GetMetadata() == nil {
+	// 	return errors.New("gotify: message metadata must not be empty or must be an empty interface")
+	// }
+
 	return nil
 }
 
@@ -80,7 +97,14 @@ func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
 	return http.NewRequest("POST", "", bytes.NewReader(bdata))
 }
 
-func (g *GotifyNotifier) parseResponse(*http.Response) error {
+func (g *GotifyNotifier) parseResponse(resp *http.Response) error {
+	if resp.StatusCode != 200 {
+		// body := &map[string]interface{}{}
+		// json.Unmarshal(resp.Body.Read())
+
+		return errors.New("gotify: unable to send message request successfully")
+	}
+
 	return nil
 }
 

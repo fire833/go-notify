@@ -19,6 +19,7 @@
 package gonotify
 
 import (
+	"errors"
 	"net/http"
 )
 
@@ -69,6 +70,10 @@ func (p *PushoverNotifier) SendMessage(msg *Message) error {
 }
 
 func (p *PushoverNotifier) validateMessage(msg *Message) error {
+	if msg.GetMessage() == "" {
+		return errors.New("pushover: message body is required for notification")
+	}
+
 	return nil
 }
 
@@ -79,7 +84,7 @@ func (p *PushoverNotifier) generateRequest(msg *Message) (*http.Request, error) 
 	return nil, nil
 }
 
-func (p *PushoverNotifier) parseResponse(*http.Response) error {
+func (p *PushoverNotifier) parseResponse(resp *http.Response) error {
 	return nil
 }
 
