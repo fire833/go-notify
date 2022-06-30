@@ -15,26 +15,22 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-name: Run tests
+version: 2
+updates:
 
-on:
-  pull_request:
+- package-ecosystem: gomod
+  directory: /
+  schedule:
+    interval: weekly
+  assignees:
+  - fire833
+  target-branch: main
+
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: daily
+  assignees:
+  - fire833
+  target-branch: main
   
-  release:
-
-  push:
-    branches:
-      - "main"
-
-jobs:
-  test-all:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '${{ env.golang-version }}'
-    - name: Run unit tests
-      run: go test -v ./...
