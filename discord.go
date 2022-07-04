@@ -19,8 +19,11 @@
 package gonotify
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
-	"net/url"
 )
 
 type DiscordNotifier struct {
@@ -28,7 +31,8 @@ type DiscordNotifier struct {
 }
 
 type DiscordConfig struct {
-	WebhookURL *url.URL
+	Id    string
+	Token string
 }
 
 func NewDiscordNotifier() *DiscordNotifier {
@@ -50,7 +54,10 @@ func NewDiscordNotifierConfigMust(config *DiscordConfig) *DiscordNotifier {
 }
 
 func NewDefaultDiscordConfig() *DiscordConfig {
-	return &DiscordConfig{}
+	return &DiscordConfig{
+		Id:    "",
+		Token: "",
+	}
 }
 
 func (d *DiscordNotifier) SendMessage(msg *Message) error {
@@ -58,21 +65,62 @@ func (d *DiscordNotifier) SendMessage(msg *Message) error {
 }
 
 func (d *DiscordNotifier) validateMessage(msg *Message) error {
+	if msg.GetMessage() == "" {
+		return errors.New("discord: message body is required for notification")
+	}
+
 	return nil
 }
 
 func (d *DiscordNotifier) generateRequest(msg *Message) (*http.Request, error) {
-	return nil, nil
+
+	body := &map[string]interface{}{
+		"content": msg.GetMessage(),
+	}
+
+	bdata, e := json.Marshal(body)
+	if e != nil {
+		return nil, e
+	}
+
+	req, e1 := http.NewRequest("POST", discordURLgen(fmt.Sprintf("%s", d.config.GetData()["id"]), fmt.Sprintf("%s", d.config.GetData()["token"])), bytes.NewReader(bdata))
+	if e1 != nil {
+		return nil, e1
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
+}
+
+func discordURLgen(id string, token string) (url string) {
+	return "https://discord.com/api/webhooks/" + id + "/" + token
 }
 
 func (d *DiscordNotifier) parseResponse(resp *http.Response) error {
+	if resp.StatusCode < 200 && resp.StatusCode > 299 {
+		return errors.New("discord: unable to send message request successfully")
+	}
+
 	return nil
 }
 
 func (c *DiscordConfig) Validate() []error {
-	return nil
+	var retErr []error
+
+	if c.Id == "" {
+		retErr = append(retErr, errors.New("discord: webhook id must not be nil"))
+	}
+
+	if c.Token == "" {
+		retErr = append(retErr, errors.New("discord: webhook token must not be nil"))
+	}
+
+	return retErr
 }
 
 func (c *DiscordConfig) GetData() map[string]interface{} {
-	return map[string]interface{}{}
+	return map[string]interface{}{
+		"id":    c.Id,
+		"token": c.Token,
+	}
 }
