@@ -73,7 +73,7 @@ func (n *genericHTTPNotifier) sendMessageInternal(msg *Message,
 
 // Configure configures the notifier with proper configuration for its operation.
 func (n *genericHTTPNotifier) Configure(config NotifierConfig) error {
-	if e := config.Validate(); e != nil {
+	if e := config.Validate(); len(e) != 0 {
 		return common.ErrorInvalidConfiguration
 	}
 

@@ -99,9 +99,6 @@ func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
 
 func (g *GotifyNotifier) parseResponse(resp *http.Response) error {
 	if resp.StatusCode != 200 {
-		// body := &map[string]interface{}{}
-		// json.Unmarshal(resp.Body.Read())
-
 		return errors.New("gotify: unable to send message request successfully")
 	}
 
