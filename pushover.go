@@ -79,7 +79,7 @@ func (p *PushoverNotifier) validateMessage(msg *Message) error {
 
 func (p *PushoverNotifier) generateRequest(msg *Message) (*http.Request, error) {
 
-	// http.NewRequest("POST", urlgen.createURL())
+	// req, e := http.NewRequest("POST", pushoverEndpoint)
 
 	return nil, nil
 }

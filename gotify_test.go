@@ -75,75 +75,41 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 	msg5.SetTitle("The title of this message")
 	msg5.SetPriority(-3)
 
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		wantErr bool
 	}{
 		{
-			name: "1",
-			fields: fields{
-				genericHTTPNotifier: genericHTTPNotifier{},
-			},
-			args: args{
-				msg: msg1,
-			},
+			name:    "1",
+			msg:     msg1,
 			wantErr: true,
 		},
 		{
-			name: "2",
-			fields: fields{
-				genericHTTPNotifier: genericHTTPNotifier{},
-			},
-			args: args{
-				msg: msg2,
-			},
+			name:    "2",
+			msg:     msg2,
 			wantErr: false,
 		},
 		{
-			name: "3",
-			fields: fields{
-				genericHTTPNotifier: genericHTTPNotifier{},
-			},
-			args: args{
-				msg: msg3,
-			},
+			name:    "3",
+			msg:     msg3,
 			wantErr: true,
 		},
 		{
-			name: "4",
-			fields: fields{
-				genericHTTPNotifier: genericHTTPNotifier{},
-			},
-			args: args{
-				msg: msg4,
-			},
+			name:    "4",
+			msg:     msg4,
 			wantErr: true,
 		},
 		{
-			name: "5",
-			fields: fields{
-				genericHTTPNotifier: genericHTTPNotifier{},
-			},
-			args: args{
-				msg: msg5,
-			},
+			name:    "5",
+			msg:     msg5,
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := g.validateMessage(tt.args.msg); (err != nil) != tt.wantErr {
+			g := &GotifyNotifier{}
+			if err := g.validateMessage(tt.msg); (err != nil) != tt.wantErr {
 				t.Errorf("GotifyNotifier.validateMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -151,16 +117,9 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 }
 
 func TestGotifyNotifier_generateRequest(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		want    *http.Request
 		wantErr bool
 	}{
@@ -168,10 +127,8 @@ func TestGotifyNotifier_generateRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			got, err := g.generateRequest(tt.args.msg)
+			g := &GotifyNotifier{}
+			got, err := g.generateRequest(tt.msg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GotifyNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -184,26 +141,17 @@ func TestGotifyNotifier_generateRequest(t *testing.T) {
 }
 
 func TestGotifyNotifier_parseResponse(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		in0 *http.Response
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		resp    *http.Response
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GotifyNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := g.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
+			g := &GotifyNotifier{}
+			if err := g.parseResponse(tt.resp); (err != nil) != tt.wantErr {
 				t.Errorf("GotifyNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

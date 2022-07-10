@@ -34,16 +34,16 @@ var (
 type Message struct {
 	m sync.RWMutex
 
-	msg string `json:"message" yaml:"message"`
+	msg string // `json:"message" yaml:"message"`
 
-	title    string   `json:"title,omitempty" yaml:"title,omitempty"`
-	subtitle string   `json:"subtitle,omitempty" yaml:"subtitle,omitempty"`
-	priority int      `json:"priority,omitempty" yaml:"priority,omitempty"`
-	url      *url.URL `json:"url,omitempty" yaml:"url,omitempty"`
+	title    string   // `json:"title,omitempty" yaml:"title,omitempty"`
+	subtitle string   // `json:"subtitle,omitempty" yaml:"subtitle,omitempty"`
+	priority int      // `json:"priority,omitempty" yaml:"priority,omitempty"`
+	url      *url.URL // `json:"url,omitempty" yaml:"url,omitempty"`
 
-	metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	metadata map[string]interface{} // `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
-	timestamp int64 `json:"timestamp" yaml:"timestamp"`
+	timestamp int64 // `json:"timestamp" yaml:"timestamp"`
 }
 
 func NewMessage(msg string) *Message {

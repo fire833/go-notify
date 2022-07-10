@@ -25,16 +25,9 @@ import (
 )
 
 func TestSlackNotifier_generateRequest(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		want    *http.Request
 		wantErr bool
 	}{
@@ -42,10 +35,8 @@ func TestSlackNotifier_generateRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SlackNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			got, err := s.generateRequest(tt.args.msg)
+			s := &SlackNotifier{}
+			got, err := s.generateRequest(tt.msg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SlackNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -58,26 +49,17 @@ func TestSlackNotifier_generateRequest(t *testing.T) {
 }
 
 func TestSlackNotifier_parseResponse(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		in0 *http.Response
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		resp    *http.Response
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SlackNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := s.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
+			s := &SlackNotifier{}
+			if err := s.parseResponse(tt.resp); (err != nil) != tt.wantErr {
 				t.Errorf("SlackNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -85,26 +67,17 @@ func TestSlackNotifier_parseResponse(t *testing.T) {
 }
 
 func TestSlackNotifier_validateMessage(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SlackNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := s.validateMessage(tt.args.msg); (err != nil) != tt.wantErr {
+			s := &SlackNotifier{}
+			if err := s.validateMessage(tt.msg); (err != nil) != tt.wantErr {
 				t.Errorf("SlackNotifier.validateMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

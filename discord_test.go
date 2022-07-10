@@ -155,26 +155,17 @@ func TestDiscordConfig_GetData(t *testing.T) {
 }
 
 func TestDiscordNotifier_validateMessage(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &DiscordNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := d.validateMessage(tt.args.msg); (err != nil) != tt.wantErr {
+			d := &DiscordNotifier{}
+			if err := d.validateMessage(tt.msg); (err != nil) != tt.wantErr {
 				t.Errorf("DiscordNotifier.validateMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -182,16 +173,9 @@ func TestDiscordNotifier_validateMessage(t *testing.T) {
 }
 
 func TestDiscordNotifier_generateRequest(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		msg *Message
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		msg     *Message
 		want    *http.Request
 		wantErr bool
 	}{
@@ -199,10 +183,8 @@ func TestDiscordNotifier_generateRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &DiscordNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			got, err := d.generateRequest(tt.args.msg)
+			d := &DiscordNotifier{}
+			got, err := d.generateRequest(tt.msg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DiscordNotifier.generateRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -215,26 +197,17 @@ func TestDiscordNotifier_generateRequest(t *testing.T) {
 }
 
 func TestDiscordNotifier_parseResponse(t *testing.T) {
-	type fields struct {
-		genericHTTPNotifier genericHTTPNotifier
-	}
-	type args struct {
-		in0 *http.Response
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		args    args
+		resp    *http.Response
 		wantErr bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &DiscordNotifier{
-				genericHTTPNotifier: tt.fields.genericHTTPNotifier,
-			}
-			if err := d.parseResponse(tt.args.in0); (err != nil) != tt.wantErr {
+			d := &DiscordNotifier{}
+			if err := d.parseResponse(tt.resp); (err != nil) != tt.wantErr {
 				t.Errorf("DiscordNotifier.parseResponse() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

@@ -26,9 +26,8 @@ import (
 
 func Test_genericHTTPNotifier_sendMessageInternal(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  NotifierConfig
-		closed  bool
+		config NotifierConfig
+		closed bool
 	}
 	type args struct {
 		msg          *Message
@@ -47,7 +46,7 @@ func Test_genericHTTPNotifier_sendMessageInternal(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &genericHTTPNotifier{
-				RWMutex: tt.fields.RWMutex,
+				RWMutex: sync.RWMutex{},
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}
@@ -60,9 +59,8 @@ func Test_genericHTTPNotifier_sendMessageInternal(t *testing.T) {
 
 func Test_genericHTTPNotifier_Configure(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  NotifierConfig
-		closed  bool
+		config NotifierConfig
+		closed bool
 	}
 	type args struct {
 		config NotifierConfig
@@ -78,7 +76,7 @@ func Test_genericHTTPNotifier_Configure(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &genericHTTPNotifier{
-				RWMutex: tt.fields.RWMutex,
+				RWMutex: sync.RWMutex{},
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}
@@ -91,9 +89,8 @@ func Test_genericHTTPNotifier_Configure(t *testing.T) {
 
 func Test_genericHTTPNotifier_Close(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  NotifierConfig
-		closed  bool
+		config NotifierConfig
+		closed bool
 	}
 	tests := []struct {
 		name    string
@@ -105,7 +102,7 @@ func Test_genericHTTPNotifier_Close(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &genericHTTPNotifier{
-				RWMutex: tt.fields.RWMutex,
+				RWMutex: sync.RWMutex{},
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}
@@ -118,9 +115,8 @@ func Test_genericHTTPNotifier_Close(t *testing.T) {
 
 func Test_genericHTTPNotifier_isReady(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  NotifierConfig
-		closed  bool
+		config NotifierConfig
+		closed bool
 	}
 	tests := []struct {
 		name   string
@@ -132,7 +128,7 @@ func Test_genericHTTPNotifier_isReady(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &genericHTTPNotifier{
-				RWMutex: tt.fields.RWMutex,
+				RWMutex: sync.RWMutex{},
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}
@@ -145,9 +141,8 @@ func Test_genericHTTPNotifier_isReady(t *testing.T) {
 
 func Test_genericHTTPNotifier_isClosed(t *testing.T) {
 	type fields struct {
-		RWMutex sync.RWMutex
-		config  NotifierConfig
-		closed  bool
+		config NotifierConfig
+		closed bool
 	}
 	tests := []struct {
 		name   string
@@ -159,7 +154,7 @@ func Test_genericHTTPNotifier_isClosed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &genericHTTPNotifier{
-				RWMutex: tt.fields.RWMutex,
+				RWMutex: sync.RWMutex{},
 				config:  tt.fields.config,
 				closed:  tt.fields.closed,
 			}

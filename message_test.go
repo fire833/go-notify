@@ -22,7 +22,6 @@ import (
 	crand "crypto/rand"
 	"math/big"
 	"math/rand"
-	"reflect"
 	"testing"
 )
 
@@ -285,38 +284,37 @@ func TestMessage_String(t *testing.T) {
 	}
 }
 
-func TestMessage_MarshalJSON(t *testing.T) {
+// func TestMessage_MarshalJSON(t *testing.T) {
 
-	t1 := NewMessage("12345")
-	t1out :=
-		`{
-   
+// 	t1 := NewMessage("12345")
+// 	t1out :=
+// 		`{
 
-}`
+// }`
 
-	tests := []struct {
-		name    string
-		testmsg *Message
-		want    []byte
-		wantErr bool
-	}{
-		{
-			name:    "1",
-			testmsg: t1,
-			want:    []byte(t1out),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.testmsg.MarshalJSON()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Message.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Message.MarshalJSON() = %s, want %s", string(got), string(tt.want))
-			}
-		})
-	}
-}
+// 	tests := []struct {
+// 		name    string
+// 		testmsg *Message
+// 		want    []byte
+// 		wantErr bool
+// 	}{
+// 		{
+// 			name:    "1",
+// 			testmsg: t1,
+// 			want:    []byte(t1out),
+// 			wantErr: false,
+// 		},
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			got, err := tt.testmsg.MarshalJSON()
+// 			if (err != nil) != tt.wantErr {
+// 				t.Errorf("Message.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+// 				return
+// 			}
+// 			if !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("Message.MarshalJSON() = %s, want %s", string(got), string(tt.want))
+// 			}
+// 		})
+// 	}
+// }
