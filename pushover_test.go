@@ -54,7 +54,20 @@ func TestPushoverNotifier_parseResponse(t *testing.T) {
 		resp    *http.Response
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "1",
+			resp: &http.Response{
+				StatusCode: http.StatusNotAcceptable,
+			},
+			wantErr: true,
+		},
+		{
+			name: "2",
+			resp: &http.Response{
+				StatusCode: http.StatusOK,
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

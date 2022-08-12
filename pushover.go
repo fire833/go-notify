@@ -85,6 +85,10 @@ func (p *PushoverNotifier) generateRequest(msg *Message) (*http.Request, error) 
 }
 
 func (p *PushoverNotifier) parseResponse(resp *http.Response) error {
+	if resp.StatusCode != 200 {
+		return errors.New("pushover: unable to send message request successfully")
+	}
+
 	return nil
 }
 

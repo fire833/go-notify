@@ -19,6 +19,7 @@
 package gonotify
 
 import (
+	"errors"
 	"net/http"
 )
 
@@ -72,6 +73,10 @@ func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {
 }
 
 func (s *SlackNotifier) parseResponse(resp *http.Response) error {
+	if resp.StatusCode != 200 {
+		return errors.New("slack: unable to send message request successfully")
+	}
+
 	return nil
 }
 

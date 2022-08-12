@@ -97,7 +97,7 @@ func discordURLgen(id string, token string) (url string) {
 }
 
 func (d *DiscordNotifier) parseResponse(resp *http.Response) error {
-	if resp.StatusCode < 200 && resp.StatusCode > 299 {
+	if resp.StatusCode != 200 {
 		return errors.New("discord: unable to send message request successfully")
 	}
 
