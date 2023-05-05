@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"sync"
 )
 
@@ -35,6 +36,8 @@ type TeamsNotifier struct {
 type TeamsConfig struct {
 	WebhookURL string `json:"teamsWebhookURL" yaml:"teamsWebhookURL"`
 	Color      string `json:"teamsColor" yaml:"teamsColor"`
+
+	parsedUrl *url.URL
 }
 
 func NewTeamsNotifier() *TeamsNotifier {
@@ -98,8 +101,7 @@ func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
 		return nil, e
 	}
 
-	return http.NewRequest("POST", "", bytes.NewReader(bdata))
-
+	return http.NewRequest("POST", t.config.GetData()["url"].(string), bytes.NewReader(bdata))
 }
 
 func (t *TeamsNotifier) parseResponse(resp *http.Response) error {
@@ -107,7 +109,12 @@ func (t *TeamsNotifier) parseResponse(resp *http.Response) error {
 }
 
 func (c *TeamsConfig) Validate() []error {
-	return nil
+	if url, e := url.Parse(c.WebhookURL); e != nil {
+		return []error{e}
+	} else {
+		c.parsedUrl = url
+		return nil
+	}
 }
 
 func (c *TeamsConfig) GetData() map[string]interface{} {

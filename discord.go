@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
@@ -83,7 +82,7 @@ func (d *DiscordNotifier) generateRequest(msg *Message) (*http.Request, error) {
 		return nil, e
 	}
 
-	req, e1 := http.NewRequest("POST", discordURLgen(fmt.Sprintf("%s", d.config.GetData()["id"]), fmt.Sprintf("%s", d.config.GetData()["token"])), bytes.NewReader(bdata))
+	req, e1 := http.NewRequest("POST", discordURLgen(d.config.GetData()["id"].(string), d.config.GetData()["token"].(string)), bytes.NewReader(bdata))
 	if e1 != nil {
 		return nil, e1
 	}

@@ -19,8 +19,11 @@
 package gonotify
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 )
 
 type SlackNotifier struct {
@@ -29,6 +32,8 @@ type SlackNotifier struct {
 
 type SlackConfig struct {
 	WebhookURL string
+
+	parsedUrl *url.URL
 }
 
 func NewSlackNotifier() *SlackNotifier {
@@ -69,7 +74,17 @@ func (s *SlackNotifier) validateMessage(msg *Message) error {
 }
 
 func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {
-	return nil, nil
+
+	body := &map[string]interface{}{
+		"text": msg.GetMessage(),
+	}
+
+	bdata, e := json.Marshal(body)
+	if e != nil {
+		return nil, e
+	}
+
+	return http.NewRequest("POST", s.config.GetData()["url"].(string), bytes.NewReader(bdata))
 }
 
 func (s *SlackNotifier) parseResponse(resp *http.Response) error {
@@ -81,11 +96,17 @@ func (s *SlackNotifier) parseResponse(resp *http.Response) error {
 }
 
 func (c *SlackConfig) Validate() []error {
-	return nil
+	if url, e := url.Parse(c.WebhookURL); e != nil {
+		return []error{e}
+	} else {
+		c.parsedUrl = url
+		return nil
+	}
 }
 
 func (c *SlackConfig) GetData() map[string]interface{} {
 	return map[string]interface{}{
-		"url": c.WebhookURL,
+		"url":    c.WebhookURL,
+		"parsed": c.parsedUrl,
 	}
 }

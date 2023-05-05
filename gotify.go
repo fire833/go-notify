@@ -94,7 +94,15 @@ func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
 		return nil, e
 	}
 
-	return http.NewRequest("POST", "", bytes.NewReader(bdata))
+	url := g.config.GetData()["host"].(string) + "/message"
+
+	req, e1 := http.NewRequest("POST", url, bytes.NewReader(bdata))
+	if e1 != nil {
+		return nil, e1
+	}
+
+	req.Header["X-Gotify-Key"] = []string{g.config.GetData()["apiKey"].(string)}
+	return req, nil
 }
 
 func (g *GotifyNotifier) parseResponse(resp *http.Response) error {
@@ -110,5 +118,8 @@ func (g *GotifyConfig) Validate() []error {
 }
 
 func (g *GotifyConfig) GetData() map[string]interface{} {
-	return map[string]interface{}{}
+	return map[string]interface{}{
+		"host":   g.Host,
+		"apiKey": g.APIKey,
+	}
 }
