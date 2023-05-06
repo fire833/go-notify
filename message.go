@@ -61,34 +61,39 @@ func NewMessage(msg string) *Message {
 	return m
 }
 
-func (msg *Message) SetMessage(new string) {
+func (msg *Message) SetMessage(new string) *Message {
 	msg.m.Lock()
 	msg.msg = new
 	msg.m.Unlock()
+	return msg
 }
 
-func (msg *Message) SetTitle(title string) {
+func (msg *Message) SetTitle(title string) *Message {
 	msg.m.Lock()
 	msg.title = title
 	msg.m.Unlock()
+	return msg
 }
 
-func (msg *Message) SetSubtitle(subtitle string) {
+func (msg *Message) SetSubtitle(subtitle string) *Message {
 	msg.m.Lock()
 	msg.subtitle = subtitle
 	msg.m.Unlock()
+	return msg
 }
 
-func (msg *Message) SetPriority(prio int) {
+func (msg *Message) SetPriority(prio int) *Message {
 	msg.m.Lock()
 	msg.priority = prio
 	msg.m.Unlock()
+	return msg
 }
 
-func (msg *Message) SetURL(url *url.URL) {
+func (msg *Message) SetURL(url *url.URL) *Message {
 	msg.m.Lock()
 	msg.url = url
 	msg.m.Unlock()
+	return msg
 }
 
 func (msg *Message) GetMessage() string {
