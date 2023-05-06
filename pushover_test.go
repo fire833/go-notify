@@ -19,6 +19,8 @@
 package gonotify
 
 import (
+	"bytes"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -46,6 +48,16 @@ func TestPushoverNotifier_generateRequest(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestQuery(t *testing.T) {
+	req, _ := http.NewRequest("POST", "https://somewhere.com?foo=bar", bytes.NewReader([]byte{}))
+
+	q := req.URL.Query()
+	q.Add("foo1", "bar1")
+
+	req.URL.RawQuery = q.Encode()
+	fmt.Println(req.URL)
 }
 
 func TestPushoverNotifier_parseResponse(t *testing.T) {

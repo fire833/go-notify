@@ -19,8 +19,10 @@
 package gonotify
 
 import (
+	"bytes"
 	"errors"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -78,10 +80,24 @@ func (p *PushoverNotifier) validateMessage(msg *Message) error {
 }
 
 func (p *PushoverNotifier) generateRequest(msg *Message) (*http.Request, error) {
+	req, e := http.NewRequest("POST", pushoverEndpoint, bytes.NewReader([]byte{}))
+	if e != nil {
+		return nil, e
+	}
+	params := req.URL.Query()
+	params.Add("token", p.config.GetData()["token"].(string))
+	params.Add("user", p.config.GetData()["user"].(string))
+	params.Add("message", msg.GetMessage())
+	params.Add("title", msg.GetTitle())
+	if msg.url != nil {
+		params.Add("url", msg.url.String())
+	}
+	params.Add("timestamp", strconv.Itoa(int(msg.timestamp)))
 
-	// req, e := http.NewRequest("POST", pushoverEndpoint)
+	parsedQuery := params.Encode()
+	req.URL.RawQuery = parsedQuery
 
-	return nil, nil
+	return req, nil
 }
 
 func (p *PushoverNotifier) parseResponse(resp *http.Response) error {
@@ -97,5 +113,8 @@ func (p *PushoverConfig) Validate() []error {
 }
 
 func (p *PushoverConfig) GetData() map[string]interface{} {
-	return map[string]interface{}{}
+	return map[string]interface{}{
+		"token": p.APIKey,
+		"user":  p.Userkey,
+	}
 }
