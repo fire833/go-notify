@@ -41,7 +41,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value1",
 				value: 12345,
 			},
-			want: []byte(`"value1" : 12345`),
+			want: []byte(`"value1":12345`),
 		},
 		{
 			name: "2",
@@ -50,7 +50,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value2",
 				value: "string here",
 			},
-			want: []byte(`"value2" : "string here"`),
+			want: []byte(`"value2":"string here"`),
 		},
 		{
 			name: "3",
@@ -59,7 +59,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value3",
 				value: -34789573489,
 			},
-			want: []byte(`"value3" : -34789573489`),
+			want: []byte(`"value3":-34789573489`),
 		},
 		{
 			name: "4",
@@ -68,7 +68,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value4",
 				value: 'a',
 			},
-			want: []byte(`"value4" : 97`),
+			want: []byte(`"value4":97`),
 		},
 		{
 			name: "5",
@@ -77,7 +77,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value5",
 				value: "a string here",
 			},
-			want: []byte(`"value5" : "a string here"`),
+			want: []byte(`"value5":"a string here"`),
 		},
 		{
 			name: "6",
@@ -86,7 +86,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value6",
 				value: 20.3456,
 			},
-			want: []byte(`"value6" : 20.3456`),
+			want: []byte(`"value6":20.3456`),
 		},
 		{
 			name: "7",
@@ -95,7 +95,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value7",
 				value: true,
 			},
-			want: []byte(`"value7" : true`),
+			want: []byte(`"value7":true`),
 		},
 		{
 			name: "8",
@@ -104,7 +104,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value8",
 				value: false,
 			},
-			want: []byte(`"value8" : false`),
+			want: []byte(`"value8":false`),
 		},
 		{
 			name: "9",
@@ -113,7 +113,7 @@ func TestAppendJSONKV(t *testing.T) {
 				key:   "value9",
 				value: '1',
 			},
-			want: []byte(`"value9" : 49`),
+			want: []byte(`"value9":49`),
 		},
 	}
 	for _, tt := range tests {

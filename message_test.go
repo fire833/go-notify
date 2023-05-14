@@ -22,6 +22,7 @@ import (
 	crand "crypto/rand"
 	"math/big"
 	"math/rand"
+	"reflect"
 	"testing"
 )
 
@@ -257,17 +258,17 @@ func TestMessage_String(t *testing.T) {
 		{
 			name: "1",
 			msg:  t1,
-			want: "Title: Generic Notification\nMessage: A new message.\n",
+			want: "Title: \nMessage: A new message.\n",
 		},
 		{
 			name: "2",
 			msg:  t2,
-			want: "Title: Generic Notification\nMessage: 3485yusdfhdfjkshfjkshf8934hjsdhfg\n",
+			want: "Title: \nMessage: 3485yusdfhdfjkshfjkshf8934hjsdhfg\n",
 		},
 		{
 			name: "3",
 			msg:  t3,
-			want: "Title: Generic Notification\nMessage: jksdhjklgio54u89ghdfjkghfm,ghiory\n",
+			want: "Title: \nMessage: jksdhjklgio54u89ghdfjkghfm,ghiory\n",
 		},
 		{
 			name: "4",
@@ -284,37 +285,80 @@ func TestMessage_String(t *testing.T) {
 	}
 }
 
-// func TestMessage_MarshalJSON(t *testing.T) {
+func TestMessage_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		msg     *Message
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "1",
+			msg:     NewMessage("foo bar").SetTitle("Hello World").SetPrivacy(2).SetPriority(5),
+			want:    []byte(`{"title":"Hello World","message":"foo bar","priority":5,"privacy":2}`),
+			wantErr: false,
+		},
+		{
+			name:    "2",
+			msg:     NewMessage("1234").SetTitle("foo").SetSubtitle("bar"),
+			want:    []byte(`{"title":"foo","subtitle":"bar","message":"1234"}`),
+			wantErr: false,
+		},
+		{
+			name:    "3",
+			msg:     NewMessage("").SetPrivacy(3),
+			want:    []byte(`{"privacy":3}`),
+			wantErr: false,
+		},
+		{
+			name:    "4",
+			msg:     NewMessage(""),
+			want:    []byte(`{}`),
+			wantErr: false,
+		},
+		{
+			name:    "5",
+			msg:     NewMessage("hello there world, this is a n important message"),
+			want:    []byte(`{"message":"hello there world, this is a n important message"}`),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.msg.MarshalJSON()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Message.MarshalJSON() error = %s, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Message.MarshalJSON() = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
 
-// 	t1 := NewMessage("12345")
-// 	t1out :=
-// 		`{
+func TestMessage_SetTitle(t *testing.T) {
+	t1 := NewMessage("1234")
+	t1.title = "foo1"
 
-// }`
-
-// 	tests := []struct {
-// 		name    string
-// 		testmsg *Message
-// 		want    []byte
-// 		wantErr bool
-// 	}{
-// 		{
-// 			name:    "1",
-// 			testmsg: t1,
-// 			want:    []byte(t1out),
-// 			wantErr: false,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := tt.testmsg.MarshalJSON()
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("Message.MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("Message.MarshalJSON() = %s, want %s", string(got), string(tt.want))
-// 			}
-// 		})
-// 	}
-// }
+	tests := []struct {
+		name  string
+		msg   *Message
+		title string
+		want  *Message
+	}{
+		{
+			name:  "1",
+			msg:   NewMessage("1234"),
+			want:  t1,
+			title: "foo1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.msg.SetTitle(tt.title); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Message.SetTitle() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

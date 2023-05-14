@@ -39,6 +39,7 @@ type Message struct {
 	title    string   // `json:"title,omitempty" yaml:"title,omitempty"`
 	subtitle string   // `json:"subtitle,omitempty" yaml:"subtitle,omitempty"`
 	priority int      // `json:"priority,omitempty" yaml:"priority,omitempty"`
+	privacy  int      // `json:"privacy,omitempty" yaml:"privacy,omitempty"`
 	url      *url.URL // `json:"url,omitempty" yaml:"url,omitempty"`
 
 	metadata map[string]interface{} // `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -50,12 +51,13 @@ func NewMessage(msg string) *Message {
 
 	m := &Message{
 		msg:       msg,
-		timestamp: time.Now().UnixNano(),
-		title:     "Generic Notification",
-		subtitle:  "Generic Notification Subtitle",
+		timestamp: time.Now().Unix(),
+		title:     "",
+		subtitle:  "",
 		metadata:  map[string]interface{}{},
 		url:       nil,
-		priority:  1,
+		priority:  -1,
+		privacy:   -1,
 	}
 
 	return m
@@ -82,9 +84,16 @@ func (msg *Message) SetSubtitle(subtitle string) *Message {
 	return msg
 }
 
-func (msg *Message) SetPriority(prio int) *Message {
+func (msg *Message) SetPriority(prio uint) *Message {
 	msg.m.Lock()
-	msg.priority = prio
+	msg.priority = int(prio)
+	msg.m.Unlock()
+	return msg
+}
+
+func (msg *Message) SetPrivacy(priv uint) *Message {
+	msg.m.Lock()
+	msg.privacy = int(priv)
 	msg.m.Unlock()
 	return msg
 }
@@ -118,6 +127,12 @@ func (msg *Message) GetPriority() int {
 	msg.m.RLock()
 	defer msg.m.RUnlock()
 	return msg.priority
+}
+
+func (msg *Message) GetPrivacy() int {
+	msg.m.RLock()
+	defer msg.m.RUnlock()
+	return msg.privacy
 }
 
 func (msg *Message) GetURL() (*url.URL, error) {
@@ -174,32 +189,64 @@ func (msg *Message) MarshalJSON() ([]byte, error) {
 	var buf []byte
 
 	buf = append(buf, '{')
-	buf = utils.AppendNL(buf)
 
 	msg.m.RLock()
 
+	found := false
+
 	if msg.title != "" {
-		buf = utils.AppendNSpaces(buf, 3)
+		if !found {
+			found = true
+		}
 		buf = utils.AppendJSONKV(buf, "title", msg.title)
 	}
 
 	if msg.subtitle != "" {
-		buf = utils.CommaNL(buf)
-		buf = utils.AppendNSpaces(buf, 3)
+		if !found {
+			found = true
+		} else {
+			buf = utils.AppendComma(buf)
+		}
 		buf = utils.AppendJSONKV(buf, "subtitle", msg.subtitle)
 	}
 
 	if msg.msg != "" {
-		buf = utils.CommaNL(buf)
-		buf = utils.AppendNSpaces(buf, 3)
+		if !found {
+			found = true
+		} else {
+			buf = utils.AppendComma(buf)
+		}
 		buf = utils.AppendJSONKV(buf, "message", msg.msg)
 	}
 
 	if msg.url != nil {
-		buf = utils.CommaNL(buf)
-		buf = utils.AppendNSpaces(buf, 3)
+		if !found {
+			found = true
+		} else {
+			buf = utils.AppendComma(buf)
+		}
 		buf = utils.AppendJSONKV(buf, "url", msg.url.String())
 	}
+
+	if msg.priority != -1 {
+		if !found {
+			found = true
+		} else {
+			buf = utils.AppendComma(buf)
+		}
+		buf = utils.AppendJSONKV(buf, "priority", msg.priority)
+	}
+
+	if msg.privacy != -1 {
+		if !found {
+			found = true
+		} else {
+			buf = utils.AppendComma(buf)
+		}
+		buf = utils.AppendJSONKV(buf, "privacy", msg.privacy)
+	}
+
+	buf = append(buf, '}')
 
 	msg.m.RUnlock()
 	return buf, nil

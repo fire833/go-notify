@@ -73,7 +73,7 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 	msg4.SetTitle("")
 	msg5 := NewMessage("237483749")
 	msg5.SetTitle("The title of this message")
-	msg5.SetPriority(-3)
+	msg5.SetPriority(3)
 
 	tests := []struct {
 		name    string
@@ -103,7 +103,7 @@ func TestGotifyNotifier_validateMessage(t *testing.T) {
 		{
 			name:    "5",
 			msg:     msg5,
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {

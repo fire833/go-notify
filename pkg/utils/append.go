@@ -32,15 +32,20 @@ func AppendNL(buf []byte) []byte {
 	return buf
 }
 
-func CommaNL(buf []byte) []byte {
+func AppendCommaNL(buf []byte) []byte {
 	buf = append(buf, ',')
 	AppendNL(buf)
 	return buf
 }
 
+func AppendComma(buf []byte) []byte {
+	buf = append(buf, ',')
+	return buf
+}
+
 // Adds a new line of JSON w/ a k/v pair.
 // Like this:
-// "key" : value
+// "key":value
 //
 // Done with no preceding spaces and no succeeding comma.
 func AppendJSONKV(buf []byte, key string, value interface{}) []byte {
@@ -49,7 +54,7 @@ func AppendJSONKV(buf []byte, key string, value interface{}) []byte {
 	buf = append(buf, '"')
 	buf = append(buf, kbytes...)
 
-	buf = append(buf, `" : `...)
+	buf = append(buf, `":`...)
 
 	switch value.(type) {
 	case string:
