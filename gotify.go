@@ -81,7 +81,6 @@ func (g *GotifyNotifier) validateMessage(msg *Message) error {
 }
 
 func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
-
 	body := &map[string]interface{}{
 		"message":  msg.GetMessage(),
 		"priority": msg.GetPriority(),

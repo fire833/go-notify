@@ -20,15 +20,12 @@ package common
 
 import "net/http"
 
-var (
-
-	// NotifyHTTPTransporter is the defacto HTTP client that should
-	// be utilized for all Notifier notification transportation that must
-	// take place over HTTP. This allow for custom transports to be
-	// implemented for testing purposes of this library.
-	//
-	// Should be by default set to the http.DefaultTransport, but a custom
-	// transport **MAY** be implemented in the future tooptimize for the
-	// nature of Notifications, but that is still up in the air.
-	NotifyHTTPTransporter http.RoundTripper = http.DefaultTransport
-)
+// NotifyHTTPTransporter is the defacto HTTP client that should
+// be utilized for all Notifier notification transportation that must
+// take place over HTTP. This allow for custom transports to be
+// implemented for testing purposes of this library.
+//
+// Should be by default set to the http.DefaultTransport, but a custom
+// transport **MAY** be implemented in the future tooptimize for the
+// nature of Notifications, but that is still up in the air.
+var NotifyHTTPTransporter http.RoundTripper = http.DefaultTransport

@@ -74,7 +74,6 @@ func (s *SlackNotifier) validateMessage(msg *Message) error {
 }
 
 func (s *SlackNotifier) generateRequest(msg *Message) (*http.Request, error) {
-
 	body := &map[string]interface{}{
 		"text": msg.GetMessage(),
 	}

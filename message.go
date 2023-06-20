@@ -27,9 +27,7 @@ import (
 	"github.com/fire833/go-notify/pkg/utils"
 )
 
-var (
-	errorNoURL error = errors.New("url object is not loaded within message")
-)
+var errorNoURL error = errors.New("url object is not loaded within message")
 
 type Message struct {
 	m sync.RWMutex
@@ -48,7 +46,6 @@ type Message struct {
 }
 
 func NewMessage(msg string) *Message {
-
 	m := &Message{
 		msg:       msg,
 		timestamp: time.Now().Unix(),

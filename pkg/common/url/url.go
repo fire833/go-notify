@@ -26,5 +26,4 @@ func createURL(scheme, hostname, path string, queries map[string]string) string 
 	// }
 
 	return scheme + "://" + hostname + path + paramQuery
-
 }

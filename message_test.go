@@ -236,11 +236,9 @@ func TestMessage_SetMessage(t *testing.T) {
 	// }()
 
 	// wg.Wait()
-
 }
 
 func TestMessage_String(t *testing.T) {
-
 	t1 := NewMessage("A new message.")
 	t2 := NewMessage("")
 	t2.SetMessage("3485yusdfhdfjkshfjkshf8934hjsdhfg")

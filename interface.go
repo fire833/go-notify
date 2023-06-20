@@ -23,7 +23,6 @@ package gonotify
 // spec, but all Notifiers should also have a New() function,
 // so that the end user can easily instantiate the container.
 type Notifier interface {
-
 	// The notifier should get set with it's new configuration.
 	// This should be thread safe, and can be called at both
 	// initialization of the notifier or at runtime whenever
@@ -56,7 +55,6 @@ type Notifier interface {
 // NotifierConfig implements a generic interface for specifying the
 // configurations for Notifiers.
 type NotifierConfig interface {
-
 	// Validates the configuration struct and returns the errors
 	// that are associated with said configuration. If len(errors)
 	// is 0, then the configuration should be considered valid.

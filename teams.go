@@ -26,8 +26,6 @@ import (
 	"sync"
 )
 
-var ()
-
 type TeamsNotifier struct {
 	sync.RWMutex
 	genericHTTPNotifier
@@ -81,7 +79,6 @@ func (t *TeamsNotifier) validateMessage(msg *Message) error {
 // Internal method to generate the request for Teams incoming webhook from
 // a message. Callers should have a read lock already on the TeamsNotifier struct.
 func (t *TeamsNotifier) generateRequest(msg *Message) (*http.Request, error) {
-
 	body := &map[string]interface{}{
 		"@type":      "MessageCard",
 		"@context":   "http://schema.org/extensions",

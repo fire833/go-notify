@@ -72,7 +72,6 @@ func (d *DiscordNotifier) validateMessage(msg *Message) error {
 }
 
 func (d *DiscordNotifier) generateRequest(msg *Message) (*http.Request, error) {
-
 	body := &map[string]interface{}{
 		"content": msg.GetMessage(),
 	}
