@@ -15,26 +15,20 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-name: Run tests
+name: CI
 
 on:
   pull_request:
-  
-  release:
-
+    branches:
+      - "*"
   push:
     branches:
-      - "main"
+      - "*"
+    tags:
+      - "*"
 
 jobs:
-  test-all:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '>=1.18.0'
-    - name: Run unit tests
-      run: go test -v ./...
+  ci:
+    uses: fire833/cicd-templates/.github/workflows/golang_ci_v1.yaml@main
+    with:
+      CI_SKIP: /build/
