@@ -58,10 +58,12 @@ func (n *genericHTTPNotifier) sendMessageInternal(msg *Message,
 		}
 
 		resp, e1 := common.NotifyHTTPTransporter.RoundTrip(req)
-		e2 := parseResp(resp)
-
-		if e1 != nil || e2 != nil {
+		if e1 != nil {
 			return common.ErrorNotificationSendError
+		}
+		e2 := parseResp(resp)
+		if e2 != nil {
+			return common.ErrorNotifierParseResponseError
 		}
 
 	} else {
