@@ -22,6 +22,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -30,8 +32,8 @@ type GotifyNotifier struct {
 }
 
 type GotifyConfig struct {
-	Host   string `json:"gotifyHost" yaml:"gotifyHost"`
-	APIKey string `json:"gotifyAPIKey" yaml:"gotifyAPIKey"`
+	BaseURL string `json:"gotifyBaseUrl" yaml:"gotifyBaseUrl"`
+	APIKey  string `json:"gotifyAPIKey" yaml:"gotifyAPIKey"`
 }
 
 func NewGotifyNotifier() *GotifyNotifier {
@@ -101,12 +103,20 @@ func (g *GotifyNotifier) generateRequest(msg *Message) (*http.Request, error) {
 	}
 
 	req.Header["X-Gotify-Key"] = []string{g.config.GetData()["apiKey"].(string)}
+	req.Header["Content-Type"] = []string{"application/json"}
+	req.Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 func (g *GotifyNotifier) parseResponse(resp *http.Response) error {
 	if resp.StatusCode != 200 {
-		return errors.New("gotify: unable to send message request successfully")
+		body, e := io.ReadAll(resp.Body)
+		if e == nil {
+			return fmt.Errorf("got %d response code with body %s", resp.StatusCode, body)
+		} else {
+			return fmt.Errorf("got %d response code", resp.StatusCode)
+		}
+
 	}
 
 	return nil
@@ -118,7 +128,7 @@ func (g *GotifyConfig) Validate() []error {
 
 func (g *GotifyConfig) GetData() map[string]interface{} {
 	return map[string]interface{}{
-		"host":   g.Host,
+		"host":   g.BaseURL,
 		"apiKey": g.APIKey,
 	}
 }

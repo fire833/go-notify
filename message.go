@@ -142,10 +142,11 @@ func (msg *Message) GetURL() (*url.URL, error) {
 	}
 }
 
-func (msg *Message) AddKVMetadata(key string, value interface{}) {
+func (msg *Message) AddKVMetadata(key string, value interface{}) *Message {
 	msg.m.Lock()
 	msg.metadata[key] = value
 	msg.m.Unlock()
+	return msg
 }
 
 func (msg *Message) GetMetadata() map[string]interface{} {

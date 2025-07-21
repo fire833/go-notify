@@ -19,6 +19,7 @@
 package gonotify
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -59,11 +60,11 @@ func (n *genericHTTPNotifier) sendMessageInternal(msg *Message,
 
 		resp, e1 := common.NotifyHTTPTransporter.RoundTrip(req)
 		if e1 != nil {
-			return common.ErrorNotificationSendError
+			return fmt.Errorf("unable to send request to backend: %s", e1)
 		}
 		e2 := parseResp(resp)
 		if e2 != nil {
-			return common.ErrorNotifierParseResponseError
+			return fmt.Errorf("unable to parse response from backend: %s", e2)
 		}
 
 	} else {

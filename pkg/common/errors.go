@@ -29,6 +29,4 @@ var (
 	ErrorNotifierSerializationError error = errors.New("unable to parse message to request for backend to process")
 
 	ErrorInvalidConfiguration error = errors.New("the configuration provided is invalid")
-
-	ErrorNotificationSendError error = errors.New("unable to send notification via the desired backend")
 )
